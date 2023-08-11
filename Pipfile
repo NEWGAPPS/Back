@@ -7,8 +7,9 @@ name = "pypi"
 python-dotenv = "*"
 djangorestframework = "*"
 django = "*"
+requests = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "*"
