@@ -1,9 +1,8 @@
 from django.urls import path
-from .views import SubwayArrivalInfoView  # 지하철 도착 정보를 처리하는 뷰를 import
+from .views import DirectionsAPIView
 
 urlpatterns = [
-    # 다른 URL 패턴들
-    path('api/subway-arrival-info/', SubwayArrivalInfoView.as_view(), name='subway-arrival-info'),
+    path('api/directions/', DirectionsAPIView.as_view(), name='directions-api'),  # URL을 적절하게 설정하세요
 ]
 
 # from django.urls import path

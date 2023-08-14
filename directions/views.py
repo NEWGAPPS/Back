@@ -26,7 +26,7 @@ class DirectionsAPIView(APIView):
 
         # Subway API를 호출하고 데이터를 받아오는 함수
         def call_subway_api():
-            url = "URL_TO_SUBWAY_API"  # 실제 API 엔드포인트 URL로 대체해야 합니다.
+            url = "http://127.0.0.1:8000/subways/"  # 실제 API 엔드포인트 URL로 대체해야 합니다.
     
             try:
                 response = requests.get(url)
