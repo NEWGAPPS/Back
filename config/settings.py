@@ -29,7 +29,9 @@ REALTIME_API_KEY = os.environ['REALTIME_API_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'port-0-back-eu1k2llldu9vju.sel3.cloudtype.app',
+]
 
 
 # Application definition
