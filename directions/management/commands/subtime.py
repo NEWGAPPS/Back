@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = 'Import subway station data from CSV'
 
     def handle(self, *args, **options):
-        csv_file_path = './directions/management/commands/betweentime.csv'  # CSV 파일 경로를 지정하세요
+        csv_file_path = 'directions/management/commands/betweentime.csv'  # CSV 파일 경로를 지정하세요
 
         with open(csv_file_path, 'r', encoding='cp949') as file:
             csv_reader = csv.reader(file)
