@@ -56,7 +56,7 @@ class DirectionsAPIView(APIView):
         # 급행일시에는 중간에 있는 놈들을 불러모아야됨
         def get_stations_between(subway_line, start_station, end_station, direction):
             line_stations = Normal.get(subway_line, [])
-    
+            
             if start_station in line_stations and end_station in line_stations:
                 start_index = line_stations.index(start_station)
                 end_index = line_stations.index(end_station)
@@ -75,12 +75,12 @@ class DirectionsAPIView(APIView):
         # subway_data = call_subway_api()
         # 대신 더미데이터
         subway_data = {
-            "line_num": "4호선", #(subwayNm)
-            "direction": "0", #(updnLine) (0 : 상행/내선, 1 : 하행/외선)
-            "express": "1", #(directAt) (1:급행, 0:아님)
+            "line_num": "3호선", #(subwayNm)
+            "direction": "1", #(updnLine) (0 : 상행/내선, 1 : 하행/외선)
+            "express": "0", #(directAt) (1:급행, 0:아님)
             "arrival_message": "1", #(trainSttus) (0:진입 1:도착, 2:출발, 3:전역출발)
-            "cur_station": "초지", #(statnNm)
-            "endstation": "당고개", #(statnTnm)
+            "cur_station": "정발산", #(statnNm)
+            "endstation": "오금", #(statnTnm)
             "msg_time": "2023-08-11 10:51:42" #(recptnDt),
         }
         if subway_data["line_num"]=="신분당선":
