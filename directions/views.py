@@ -15,11 +15,11 @@ class DirectionsAPIView(APIView):
         # 기존의 Normal과 Express 딕셔너리 코드를 이곳에 작성
         Normal = {
             "3호선": ["대화","주엽","정발산","마두","백석","대곡","화정","원당","원흥","삼송","지축","구파발","연신내","불광","녹번","홍제","무악재","독립문","경복궁","안국","종로3가","을지로3가","충무로","동대입구","약수","금호","옥수","압구정","신사","잠원","고속터미널","교대","남부터미널","양재","매봉","도곡","대치","학여울","대청","일원","수서","가락시장","경찰병원","오금"],
-            "4호선": ["진접","오남","별내별가람","당고개","상계","노원", "창동","쌍문","수유","미아","미아사거리","길음","성신여대입구","한성대입구","혜화","동대문","동대문역사문화공원","충무로","명동","회현","서울역","숙대입구","삼각지","신용산","이촌","동작","총신대입구","사당","남테령","선바위","경마공원","대공원","과천","정부과천청사","인덕원","평촌","범계","금정","산본","수리산","대야미","반월","상록수","한대앞","고잔","초지","안산","신길온천","정왕","오이도"],
+            "4호선": ["진접","오남","별내별가람","당고개","상계","노원", "창동","쌍문","수유","미아","미아사거리","길음","성신여대입구","한성대입구","혜화","동대문","동대문역사문화공원","충무로","명동","회현","서울역","숙대입구","삼각지","신용산","이촌","동작","총신대입구","사당","남태령","선바위","경마공원","대공원","과천","정부과천청사","인덕원","평촌","범계","금정","산본","수리산","대야미","반월","상록수","한대앞","중앙","고잔","초지","안산","신길온천","정왕","오이도"],
             "7호선": ["장암","도봉산","수락산","마들","노원","중계","하계","공릉","태릉입구","먹골","중화","상봉","면목","사가정","용마산","중곡","군자","어린이대공원","건대입구","뚝섬유원지","청담","강남구청","학동","논현","반포","고속터미널","내방","총신대입구","남성","숭실대입구","상도","장승배기","신대방삼거리","보라매","신풍","대림","남구로","가산디지털단지","철산","광명사거리","천왕","온수","까치울","부천종합운동장","춘의","신중동","부천시청","상동","삼산체육관","굴포천","부평구청","산곡","석남"],
             "8호선": ["암사","천호","강동구청","몽촌토성","잠실","석촌","송파","가락시장","문정","장지","복정","남위례","산성","남한산성입구","단대오거리","신흥","수진","모란"],
             "9호선": ["개화","김포공항","공항시장","신방화","마곡나루","양천향교","가양","증미","등촌","염창","신목동","선유도","당산","국회의사당","여의도","샛강","노량진","노들","흑석","동작","구반포","신반포","고속터미널","사평","신논현","언주","선정릉","삼성중앙","봉은사","종합운동장","삼전","석촌고분","석촌","송파나루","한성백제","올림픽공원","둔촌오륜","중앙보훈병원"],
-            "신분당선": ["신사","논현","신논현","강남","양재","양재시민의숲","청계산입구","판교","정자","미금","동천","수지구청","성북","상현","광교중앙","광교"],
+            "0호선": ["신사","논현","신논현","강남","양재","양재시민의숲","청계산입구","판교","정자","미금","동천","수지구청","성북","상현","광교중앙","광교"],
         }
 
         Express = {
@@ -52,20 +52,40 @@ class DirectionsAPIView(APIView):
                 return operation_time
             except SubwayStationtime.DoesNotExist:
                 return None
+            
+        # 급행일시에는 중간에 있는 놈들을 불러모아야됨
+        def get_stations_between(subway_line, start_station, end_station, direction):
+            line_stations = Normal.get(subway_line, [])
+    
+            if start_station in line_stations and end_station in line_stations:
+                start_index = line_stations.index(start_station)
+                end_index = line_stations.index(end_station)
+        
+                if direction == 1: #하행이면 (순리)
+                    stations_between = line_stations[start_index:end_index + 1]
+                    return stations_between
+                else: #상행이면 (역리)
+                    stations_between = line_stations[end_index:start_index + 1]
+                    return stations_between[::-1]  # Reverse the list
+        
+            else:
+                return []
 
         # Subway API를 호출하여 데이터 가져오기
         # subway_data = call_subway_api()
         # 대신 더미데이터
         subway_data = {
-            "line_num": "신분당선", #(subwayNm)
+            "line_num": "4호선", #(subwayNm)
             "direction": "0", #(updnLine) (0 : 상행/내선, 1 : 하행/외선)
-            "express": "0", #(directAt) (1:급행, 0:아님)
+            "express": "1", #(directAt) (1:급행, 0:아님)
             "arrival_message": "1", #(trainSttus) (0:진입 1:도착, 2:출발, 3:전역출발)
-            "cur_station": "미금", #(statnNm)
-            "endstation": "강남", #(statnTnm)
+            "cur_station": "초지", #(statnNm)
+            "endstation": "당고개", #(statnTnm)
             "msg_time": "2023-08-11 10:51:42" #(recptnDt),
         }
-        
+        if subway_data["line_num"]=="신분당선":
+            subway_data["line_num"] = "0호선"
+
         if subway_data is not None:
             if int(subway_data["express"]) == 0:
                 line_num_value = subway_data["line_num"]
@@ -98,6 +118,7 @@ class DirectionsAPIView(APIView):
                 print("Error")
                 sys.exit(1)
             
+
             #msg_time 저장받아야됨 time_list에.
             #최종리스트가 subwithtime
             subwithtime = [[x, -1, -1, -1] for x in base_sub_list] #[0]은 역이름 [1]은 도착시 [2]는 도착분 [3]은 도착초
@@ -109,32 +130,31 @@ class DirectionsAPIView(APIView):
             time_list = [hour, minute, second]  # 시간, 분, 초를 리스트로 저장
 
             line_number_digits = re.findall(r'\d+', subway_data["line_num"])
-            if line_number_digits:
-                ln = int(line_number_digits[0])
-                if int(subway_data["express"]) == 0:    
+            if line_number_digits: # 호선이 숫자라면
+                ln = int(line_number_digits[0]) # 호선 추출
+                if int(subway_data["express"]) == 0:  # 완행이라면
                     if int(subway_data["direction"]) == 1: #하행 (순리대로) (자기까지 오는 시간이 자신의 termtime)
                         if int(subway_data["arrival_message"]) != 0:  # 진입이 아니라면
-                            for i in range(1, 5):   # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
+                            for i in range(1, len(subwithtime)):   # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
                                 term_time = get_operation_time_by_station_and_line(base_sub_list[i], ln)
                                 if term_time is not None: #역간시간정보 있으면
                                     mins,secs = map(int, term_time.split(":"))
                                     time_list[1] += mins
                                     time_list[2] += secs
-                                    time_list[2] += 20 #정차시간
-                                    if time_list[2] >= 120:
-                                        time_list[2] -= 120
-                                        time_list[1] += 2
-                                    elif time_list[2] >= 60:
+                                    time_list[2] += 30 #정차시간
+                                    while(time_list[2]>=60):
                                         time_list[2] -= 60
                                         time_list[1] += 1
-                                    if time_list[1] >= 120:
-                                        time_list[0] += 2
-                                        time_list[1] -= 120
-                                    elif time_list[1] >= 60:
-                                        time_list[0] += 1
+                                        if time_list[1]>=60:
+                                            time_list[1] -= 60
+                                            time_list[0] += 1
+                                            if time_list[0]>=24:
+                                                time_list[0] -=24
+                                    while(time_list[1]>=60):
                                         time_list[1] -= 60
-                                    if time_list[0] >= 24:
-                                        time_list[0] -= 24
+                                        time_list[0] += 1
+                                        if time_list[0]>=24:
+                                            time_list[0] -=24
                                     subwithtime[i][1] = time_list[0]
                                     subwithtime[i][2] = time_list[1]
                                     subwithtime[i][3] = time_list[2]
@@ -144,27 +164,26 @@ class DirectionsAPIView(APIView):
                             subwithtime[1][1] = time_list[0]
                             subwithtime[1][2] = time_list[1]
                             subwithtime[1][3] = time_list[2]
-                            for i in range(2,5): # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
+                            for i in range(2, len(subwithtime)): # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
                                 term_time = get_operation_time_by_station_and_line(base_sub_list[i], ln)
                                 if term_time is not None: #역간시간정보 있으면
                                     mins,secs = map(int, term_time.split(":"))
                                     time_list[1] += mins
                                     time_list[2] += secs
-                                    time_list[2] += 25 #정차시간
-                                    if time_list[2] >= 120:
-                                        time_list[2] -= 120
-                                        time_list[1] += 2
-                                    elif time_list[2] >= 60:
+                                    time_list[2] += 30 #정차시간
+                                    while(time_list[2]>=60):
                                         time_list[2] -= 60
                                         time_list[1] += 1
-                                    if time_list[1] >= 120:
-                                        time_list[0] += 2
-                                        time_list[1] -= 120
-                                    elif time_list[1] >= 60:
-                                        time_list[0] += 1
+                                        if time_list[1]>=60:
+                                            time_list[1] -= 60
+                                            time_list[0] += 1
+                                            if time_list[0]>=24:
+                                                time_list[0] -=24
+                                    while(time_list[1]>=60):
                                         time_list[1] -= 60
-                                    if time_list[0] >= 24:
-                                        time_list[0] -= 24
+                                        time_list[0] += 1
+                                        if time_list[0]>=24:
+                                            time_list[0] -=24
                                     subwithtime[i][1] = time_list[0]
                                     subwithtime[i][2] = time_list[1]
                                     subwithtime[i][3] = time_list[2]
@@ -172,27 +191,26 @@ class DirectionsAPIView(APIView):
                                     pass
                     else: # 상행이라면 (역리대로) (자기까지 오는 시간이 i-1의 termtime)
                         if int(subway_data["arrival_message"]) != 0:  # 진입이 아니라면
-                            for i in range(1, 5):   # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
+                            for i in range(1, len(subwithtime)):   # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
                                 term_time = get_operation_time_by_station_and_line(base_sub_list[i-1], ln)
                                 if term_time is not None: #역간시간정보 있으면
                                     mins,secs = map(int, term_time.split(":"))
                                     time_list[1] += mins
                                     time_list[2] += secs
-                                    time_list[2] += 20 #정차시간
-                                    if time_list[2] >= 120:
-                                        time_list[2] -= 120
-                                        time_list[1] += 2
-                                    elif time_list[2] >= 60:
+                                    time_list[2] += 30 #정차시간
+                                    while(time_list[2]>=60):
                                         time_list[2] -= 60
                                         time_list[1] += 1
-                                    if time_list[1] >= 120:
-                                        time_list[0] += 2
-                                        time_list[1] -= 120
-                                    elif time_list[1] >= 60:
-                                        time_list[0] += 1
+                                        if time_list[1]>=60:
+                                            time_list[1] -= 60
+                                            time_list[0] += 1
+                                            if time_list[0]>=24:
+                                                time_list[0] -=24
+                                    while(time_list[1]>=60):
                                         time_list[1] -= 60
-                                    if time_list[0] >= 24:
-                                        time_list[0] -= 24
+                                        time_list[0] += 1
+                                        if time_list[0]>=24:
+                                            time_list[0] -=24
                                     subwithtime[i][1] = time_list[0]
                                     subwithtime[i][2] = time_list[1]
                                     subwithtime[i][3] = time_list[2]
@@ -202,36 +220,160 @@ class DirectionsAPIView(APIView):
                             subwithtime[1][1] = time_list[0]
                             subwithtime[1][2] = time_list[1]
                             subwithtime[1][3] = time_list[2]
-                            for i in range(2,5): # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
+                            for i in range(2, len(subwithtime)): # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
                                 term_time = get_operation_time_by_station_and_line(base_sub_list[i-1], ln)
                                 if term_time is not None: #역간시간정보 있으면
                                     mins,secs = map(int, term_time.split(":"))
                                     time_list[1] += mins
                                     time_list[2] += secs
-                                    time_list[2] += 25 #정차시간
-                                    if time_list[2] >= 120:
-                                        time_list[2] -= 120
-                                        time_list[1] += 2
-                                    elif time_list[2] >= 60:
+                                    time_list[2] += 30 #정차시간
+                                    while(time_list[2]>=60):
                                         time_list[2] -= 60
                                         time_list[1] += 1
-                                    if time_list[1] >= 120:
-                                        time_list[0] += 2
-                                        time_list[1] -= 120
-                                    elif time_list[1] >= 60:
-                                        time_list[0] += 1
+                                        if time_list[1]>=60:
+                                            time_list[1] -= 60
+                                            time_list[0] += 1
+                                            if time_list[0]>=24:
+                                                time_list[0] -=24
+                                    while(time_list[1]>=60):
                                         time_list[1] -= 60
-                                    if time_list[0] >= 24:
-                                        time_list[0] -= 24
+                                        time_list[0] += 1
+                                        if time_list[0]>=24:
+                                            time_list[0] -=24
                                     subwithtime[i][1] = time_list[0]
                                     subwithtime[i][2] = time_list[1]
                                     subwithtime[i][3] = time_list[2]
                                 else: #역간시간정보 없으면
                                     pass
-            else: #급행이면
-                pass
+                else: #급행이면
+                    term_min = 0
+                    term_sec = 0
+                    if int(subway_data["direction"]) == 1: #하행 (순리대로) (자기까지 오는 시간이 자신의 termtime)
+                        if int(subway_data["arrival_message"]) != 0:  # 진입이 아니라면
+                            for i in range(1, len(subwithtime)):   # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
+                                term_stations = get_stations_between(subway_data["line_num"], base_sub_list[i-1], base_sub_list[i], int(subway_data["direction"]))
+                                for j in range(1, len(term_stations)):
+                                    term_time = get_operation_time_by_station_and_line(term_stations[j], ln)
+                                    if term_time is not None: #역간시간정보 있으면
+                                        mins,secs = map(int, term_time.split(":"))
+                                        term_min += mins
+                                        term_sec += secs
+                                    else: #역간시간정보 없으면
+                                        pass
+                                time_list[1] += term_min
+                                time_list[2] += term_sec
+                                while(time_list[2]>=60):
+                                    time_list[2] -= 60
+                                    time_list[1] += 1
+                                    if time_list[1]>=60:
+                                        time_list[1] -= 60
+                                        time_list[0] += 1
+                                        if time_list[0]>=24:
+                                            time_list[0] -=24
+                                while(time_list[1]>=60):
+                                    time_list[1] -= 60
+                                    time_list[0] += 1
+                                    if time_list[0]>=24:
+                                        time_list[0] -=24
+                                subwithtime[i][1] = time_list[0]
+                                subwithtime[i][2] = time_list[1]
+                                subwithtime[i][3] = time_list[2]                        
+                        elif int(subway_data["arrival_message"]) == 0:  # 진입이라면
+                            subwithtime[1][1] = time_list[0]
+                            subwithtime[1][2] = time_list[1]
+                            subwithtime[1][3] = time_list[2]
+                            for i in range(2,len(subwithtime)): # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
+                                term_stations = get_stations_between(subway_data["line_num"], base_sub_list[i-1], base_sub_list[i], int(subway_data["direction"]))
+                                for j in range(1, len(term_stations)):
+                                    term_time = get_operation_time_by_station_and_line(term_stations[j], ln)
+                                    if term_time is not None: #역간시간정보 있으면
+                                        mins,secs = map(int, term_time.split(":"))
+                                        term_min += mins
+                                        term_sec += secs
+                                    else: #역간시간정보 없으면
+                                        pass
+                                time_list[1] += term_min
+                                time_list[2] += term_sec
+                                while(time_list[2]>=60):
+                                    time_list[2] -= 60
+                                    time_list[1] += 1
+                                    if time_list[1]>=60:
+                                        time_list[1] -= 60
+                                        time_list[0] += 1
+                                        if time_list[0]>=24:
+                                            time_list[0] -=24
+                                while(time_list[1]>=60):
+                                    time_list[1] -= 60
+                                    time_list[0] += 1
+                                    if time_list[0]>=24:
+                                        time_list[0] -=24
+                                subwithtime[i][1] = time_list[0]
+                                subwithtime[i][2] = time_list[1]
+                                subwithtime[i][3] = time_list[2]
+                    else: # 상행이라면 (역리대로) (자기까지 오는 시간이 i-1의 termtime)
+                        if int(subway_data["arrival_message"]) != 0:  # 진입이 아니라면
+                            for i in range(1, len(subwithtime)):   # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
+                                term_stations = get_stations_between(subway_data["line_num"], base_sub_list[i-1], base_sub_list[i], int(subway_data["direction"]))
+                                for j in range(len(term_stations)-1):
+                                    term_time = get_operation_time_by_station_and_line(term_stations[j], ln)
+                                    if term_time is not None: #역간시간정보 있으면
+                                        mins,secs = map(int, term_time.split(":"))
+                                        term_min += mins
+                                        term_sec += secs
+                                    else: #역간시간정보 없으면
+                                        pass
+                                time_list[1] += term_min
+                                time_list[2] += term_sec
+                                while(time_list[2]>=60):
+                                    time_list[2] -= 60
+                                    time_list[1] += 1
+                                    if time_list[1]>=60:
+                                        time_list[1] -= 60
+                                        time_list[0] += 1
+                                        if time_list[0]>=24:
+                                            time_list[0] -=24
+                                while(time_list[1]>=60):
+                                    time_list[1] -= 60
+                                    time_list[0] += 1
+                                    if time_list[0]>=24:
+                                        time_list[0] -=24
+                                subwithtime[i][1] = time_list[0]
+                                subwithtime[i][2] = time_list[1]
+                                subwithtime[i][3] = time_list[2]
+                        elif int(subway_data["arrival_message"]) == 0:  # 진입이라면
+                            subwithtime[1][1] = time_list[0]
+                            subwithtime[1][2] = time_list[1]
+                            subwithtime[1][3] = time_list[2]
+                            for i in range(2, len(subwithtime)): # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
+                                term_stations = get_stations_between(subway_data["line_num"], base_sub_list[i-1], base_sub_list[i], int(subway_data["direction"]))
+                                for j in range(len(term_stations)-1):
+                                    term_time = get_operation_time_by_station_and_line(term_stations[j], ln)
+                                    if term_time is not None: #역간시간정보 있으면
+                                        mins,secs = map(int, term_time.split(":"))
+                                        term_min += mins
+                                        term_sec += secs
+                                    else: #역간시간정보 없으면
+                                        pass
+                                time_list[1] += term_min
+                                time_list[2] += term_sec
+                                while(time_list[2]>=60):
+                                    time_list[2] -= 60
+                                    time_list[1] += 1
+                                    if time_list[1]>=60:
+                                        time_list[1] -= 60
+                                        time_list[0] += 1
+                                        if time_list[0]>=24:
+                                            time_list[0] -=24
+                                while(time_list[1]>=60):
+                                    time_list[1] -= 60
+                                    time_list[0] += 1
+                                    if time_list[0]>=24:
+                                        time_list[0] -=24
+                                subwithtime[i][1] = time_list[0]
+                                subwithtime[i][2] = time_list[1]
+                                subwithtime[i][3] = time_list[2]
 
-            # 응답 데이터 구성
+            #응답 데이터 구성
             return Response(subwithtime)
 
 # class SubwayArrivalInfoView(APIView):
