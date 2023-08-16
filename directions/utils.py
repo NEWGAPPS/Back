@@ -81,7 +81,7 @@
 # # 1도착: cur==현재역 : list에서 cur station 을 start로 짜되, index 1 = msg time + time 더해줘서 cur 뒤 4개 입력.
 # # 2출발: cur==이전역 : list에서 cur station 을 start로 짜되, index 1 = msg time + time 더해줘서 cur 뒤 4개 입력.
 # # 3전역 출발: cur==이전역 : list에서 cur station 이전역을 start로 짜되, index 1 = msg time + time 더해줘서 cur 뒤 4개 입력. 
-#     # if subway_data["express"]==0: #완행이라면 이라고 판단했지만, 급해 완행 둘다 상관이없음
+#     # if subway_data["express"]==0: #완행이라면 이라고 판단했지만, 급행 완행 둘다 상관이없음
 #     target_element = subway_data["cur_station"]
 #     index_of_target = base_sub_list.index(target_element)  # 특정 요소의 인덱스 가져오기
 #     if index_of_target>=2: #current역이 첫역이 아니라면

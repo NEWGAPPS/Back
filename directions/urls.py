@@ -2,7 +2,7 @@ from django.urls import path
 from .views import DirectionsAPIView
 
 urlpatterns = [
-    path('api/directions/', DirectionsAPIView.as_view(), name='directions-api'),  # URL을 적절하게 설정하세요
+    path('directions/', DirectionsAPIView.as_view(), name='directions-api'),  # URL을 적절하게 설정하세요
 ]
 
 # from django.urls import path
