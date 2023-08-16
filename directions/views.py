@@ -9,6 +9,8 @@ from .models import SubwayStationtime  # 실제로 사용 중인 SubwayStationti
 import sys
 from .serializers import DirectionsSerializer
 import re
+import os
+import json
 
 class DirectionsAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -71,6 +73,12 @@ class DirectionsAPIView(APIView):
             else:
                 return []
 
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        name2Id_path = os.path.join(current_dir, 'name2Id.json')
+
+        with open(name2Id_path, 'r', encoding='utf-8') as json_file:
+            name2Id = json.load(json_file)
         # Subway API를 호출하여 데이터 가져오기
         # subway_data = call_subway_api()
         # 대신 더미데이터
@@ -121,7 +129,9 @@ class DirectionsAPIView(APIView):
 
             #msg_time 저장받아야됨 time_list에.
             #최종리스트가 subwithtime
-            subwithtime = [[x, -1, -1, -1] for x in base_sub_list] #[0]은 역이름 [1]은 도착시 [2]는 도착분 [3]은 도착초
+            subwithtime = [[x, -1, -1, -1, -1] for x in base_sub_list] #[0]은 역이름 [1]은 도착시 [2]는 도착분 [3]은 도착초
+            for i in subwithtime:
+                i[4] = name2Id[i[0]]
             time_str = subway_data["msg_time"]
             datetime_obj = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
             hour = datetime_obj.hour
