@@ -23,13 +23,13 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # Construct the path to the JSON file
 json_file_path = os.path.join(current_dir, 'coordinate_obj.json')
 
-with open(json_file_path, 'r') as json_file:
+with open(json_file_path, 'r', encoding='utf-8') as json_file:
     data = json.load(json_file)
 
 
 name2Id_path = os.path.join(current_dir, 'name2Id.json')
 
-with open(name2Id_path, 'r') as json_file:
+with open(name2Id_path, 'r', encoding='utf-8') as json_file:
     name2Id = json.load(json_file)
 
 
@@ -64,13 +64,13 @@ class LocationListView(APIView):
 
         sortedNeighbors = []
         result_data = {
-                       '3호선'  : [],
-                       '4호선'  : [],
-                       '7호선'  : [],
-                       '8호선'  : [],
-                       '9호선'  : [],
-                       '신분당선': []
-                       }
+            '3호선'  : [],
+            '4호선'  : [],
+            '7호선'  : [],
+            '8호선'  : [],
+            '9호선'  : [],
+            '신분당선': []
+            }
         error_data = []
 
         for entry in data:
