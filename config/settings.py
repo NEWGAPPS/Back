@@ -37,12 +37,13 @@ ALLOWED_HOSTS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:8000",
-    "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app",
-    # 다른 신뢰할 수 있는 출처들을 여기에 추가
-]
+CORS_ALLOW_ALL_ORIGINS= True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:8000",
+#     "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app",
+#     # 다른 신뢰할 수 있는 출처들을 여기에 추가
+# ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -68,10 +69,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
