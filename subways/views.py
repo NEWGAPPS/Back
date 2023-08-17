@@ -17,8 +17,13 @@ class SubwayListView(APIView):
     def get(self, request, *args, **kwargs):
 
         # 요청을 보낼 locations 앱의 API 엔드포인트 URL
-        locations_url = "http://127.0.0.1:8000/api/locations?lat=37.496970&lng=127.122720"
+        Curlat = float(kwargs["Curlat"])
+        Curlng = float(kwargs["Curlng"])
+
+        locations_url = "http://127.0.0.1:8000/api/locations?lat={}&lng={}".format(Curlat, Curlng)
+
         
+        print(Curlat, Curlng)
         try:
             sbw_response = requests.get(locations_url)
             sbw_data = sbw_response.json()
@@ -44,6 +49,8 @@ class SubwayListView(APIView):
         
                 trains = []
 
+                print(adjacent_stations)
+
                 url = f"http://swopenAPI.seoul.go.kr/api/subway/{REALTIME_API_KEY}/json/realtimePosition/0/10/{subway_nm}"
                 response = requests.get(url)
                 data = response.json()
@@ -65,7 +72,7 @@ class SubwayListView(APIView):
 
                 station_data = {
                     "station_num": subway_nm,
-                    "station_list": station_names,
+                    "station_list": adjacent_stations,
                     "trains": trains
                 }
                 result_data.append(station_data)
