@@ -13,6 +13,9 @@ import os
 import json
 import pandas as pd
 
+# REALTIME_API_KEY = settings.REALTIME_API_KEY
+# SUBWAYS_API_URL = "http://127.0.0.1:8000/api/subways"
+
 def import_subway_data(request):
     if request.method == 'POST' and request.FILES['file']:
         excel_file = request.FILES['file']
@@ -33,7 +36,7 @@ def import_subway_data(request):
     return render(request, 'directions/import_form.html')
 
 class DirectionsAPIView(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         # 기존의 Normal과 Express 딕셔너리 코드를 이곳에 작성
         Normal = {
             "3호선": ["대화","주엽","정발산","마두","백석","대곡","화정","원당","원흥","삼송","지축","구파발","연신내","불광","녹번","홍제","무악재","독립문","경복궁","안국","종로3가","을지로3가","충무로","동대입구","약수","금호","옥수","압구정","신사","잠원","고속터미널","교대","남부터미널","양재","매봉","도곡","대치","학여울","대청","일원","수서","가락시장","경찰병원","오금"],
@@ -43,28 +46,47 @@ class DirectionsAPIView(APIView):
             "9호선": ["개화","김포공항","공항시장","신방화","마곡나루","양천향교","가양","증미","등촌","염창","신목동","선유도","당산","국회의사당","여의도","샛강","노량진","노들","흑석","동작","구반포","신반포","고속터미널","사평","신논현","언주","선정릉","삼성중앙","봉은사","종합운동장","삼전","석촌고분","석촌","송파나루","한성백제","올림픽공원","둔촌오륜","중앙보훈병원"],
             "0호선": ["신사","논현","신논현","강남","양재","양재시민의숲","청계산입구","판교","정자","미금","동천","수지구청","성북","상현","광교중앙","광교"],
         }
-
         Express = {
             "4호선" : ["당고개","사당","금정","산본","상록수","중앙","초지","안산","정왕","오이도"],
             "9호선" : ["김포공항","마곡나루","가양","염창","당산","여의도","노량진","동작","고속터미널","신논현","선정릉","봉은사","종합운동장","석촌","올림픽공원","중앙보훈병원"],
         }
 
         # Subway API를 호출하고 데이터를 받아오는 함수
-        def call_subway_api():
-            url = "http://127.0.0.1:8000/subways/"  # 실제 API 엔드포인트 URL로 대체해야 합니다.
+        # def call_subway_api():
+        #     # directions 앱에서 받아온 Curlat와 Curlng 값
+        #     Curlat = float(kwargs["Curlat"])
+        #     Curlng = float(kwargs["Curlng"])
+
+        #     # subways 앱의 API 엔드포인트 URL
+        #     # subways_url = f"{SUBWAYS_API_URL}/Curlat={Curlat}&Curlng={Curlng}"
+        #     subways_url = "http://127.0.0.1:8000/api/subways/37.49697/127.122720/"  # 실제 API 엔드포인트 URL로 대체해야 합니다.
+
+
+        #     try:
+        #         sbw_response = requests.get(subways_url)
+        #         sbw_data = sbw_response.json()
+        #         result_data = sbw_data["result_data"]
+        #     except json.JSONDecodeError as e:
+        #         result_data = []  # 빈 리스트로 초기화하여 에러 처리
+
+        #     return Response({"result_data": result_data})
+        #     # Curlat = float(kwargs["Curlat"])
+        #     # Curlng = float(kwargs["Curlng"])
+
+        #     # url = "http://127.0.0.1:8000/api/subways/{}/{}/".format(Curlat, Curlng)  # 실제 API 엔드포인트 URL로 대체해야 합니다.
     
-            try:
-                response = requests.get(url)
-                response.raise_for_status()  # HTTP 요청이 성공적이지 않을 경우 예외를 발생시킵니다.
-                data = response.json()       # JSON 응답 데이터를 파싱하여 딕셔너리로 변환합니다.
+        #     # try:
+        #     #     response = requests.get(url)
+        #     #     response.raise_for_status()  # HTTP 요청이 성공적이지 않을 경우 예외를 발생시킵니다.
+        #     #     data = response.json()       # JSON 응답 데이터를 파싱하여 딕셔너리로 변환합니다.
         
-            # 데이터를 가공 또는 활용하는 로직을 추가하세요
-            # data를 이용한 작업을 진행하세요
+        #     # 데이터를 가공 또는 활용하는 로직을 추가하세요
+        #     # data를 이용한 작업을 진행하세요
         
-                return data  # 원하는 데이터를 반환합니다.
-            except requests.exceptions.RequestException as e:
-                print("API 요청 중 오류 발생:", e)
-                return None
+        #     #     return data  # 원하는 데이터를 반환합니다.
+        #     # except requests.exceptions.RequestException as e:
+        #     #     print("API 요청 중 오류 발생:", e)
+        #     #     return None
 
         # 모델에서 운행 시간을 가져오는 함수
         def get_operation_time_by_station_and_line(station_name, line_number):
@@ -113,18 +135,99 @@ class DirectionsAPIView(APIView):
 
         with open(name2Id_path, 'r', encoding='utf-8') as json_file:
             name2Id = json.load(json_file)
-        # Subway API를 호출하여 데이터 가져오기
-        # subway_data = call_subway_api()
+        
+        # # Subway API를 호출하여 데이터 가져오기
+        # # toomuch_data = call_subway_api()
+        # toomuch_data = {
+        #     "result_data": [
+        #         {
+        #             "station_num": "3호선",
+        #             "station_list": [
+        #                 "수서",
+        #                 "가락시장",
+        #                 "경찰병원",
+        #                 "오금"
+        #             ],
+        #             "trains": [
+        #                 {
+        #                     "line_num": "3호선",
+        #                     "direction": "0",
+        #                     "express": "0",
+        #                     "arrival_message": "2",
+        #                     "cur_station": "가락시장",
+        #                     "endstation": "대치",
+        #                     "msg_time": "2023-08-17 17:39:23",
+        #                     "train_num": "3253"
+        #                 }
+        #             ]
+        #         },
+        #         {
+        #             "station_num": "8호선",
+        #             "station_list": [
+        #                 "석촌",
+        #                 "송파",
+        #                 "가락시장",
+        #                 "문정"
+        #             ],
+        #             "trains": [
+        #                 {
+        #                     "line_num": "8호선",
+        #                     "direction": "0",
+        #                     "express": "0",
+        #                     "arrival_message": "1",
+        #                     "cur_station": "잠실",
+        #                     "endstation": "암사",
+        #                     "msg_time": "2023-08-17 17:39:30",
+        #                     "train_num": "8190"
+        #                 },
+        #                 {
+        #                     "line_num": "신분당선",
+        #                     "direction": "1",
+        #                     "express": "0",
+        #                     "arrival_message": "2",
+        #                     "cur_station": "양재시민의숲",
+        #                     "endstation": "정자",
+        #                     "msg_time": "2023-08-17 17:39:34",
+        #                     "train_num": "818"
+        #                 }
+        #             ]
+        #         }
+        #     ]
+        # }
+        # # 주어진 데이터에서 특정 train_num을 가진 딕셔너리 추출
+        
+        # # # target_train_num 
+        # target_train_num = kwargs["train_num"] 
+        # # print(target_train_num)
+        # subway_data = None
+
+        # for entry in toomuch_data["result_data"]:
+        #     for train in entry["trains"]:
+        #         if train["train_num"] == target_train_num:
+        #             subway_data = train
+        #             break
+
         # 대신 더미데이터
+        # subway_data = {
+        #     "line_num": "3호선", #(subwayNm)
+        #     "direction": "0", #(updnLine) (0 : 상행/내선, 1 : 하행/외선)
+        #     "express": "0", #(directAt) (1:급행, 0:아님)
+        #     "arrival_message": "1", #(trainSttus) (0:진입 1:도착, 2:출발, 3:전역출발)
+        #     "cur_station": "원당", #(statnNm)
+        #     "endstation": "정발산", #(statnTnm)
+        #     "msg_time": "2023-08-11 10:51:42" #(recptnDt),
+        # }
         subway_data = {
-            "line_num": "3호선", #(subwayNm)
-            "direction": "1", #(updnLine) (0 : 상행/내선, 1 : 하행/외선)
-            "express": "0", #(directAt) (1:급행, 0:아님)
-            "arrival_message": "1", #(trainSttus) (0:진입 1:도착, 2:출발, 3:전역출발)
-            "cur_station": "정발산", #(statnNm)
-            "endstation": "원당", #(statnTnm)
-            "msg_time": "2023-08-11 10:51:42" #(recptnDt),
+            "line_num": request.data.get("line_num"),
+            "direction": request.data.get("direction"),
+            "express": request.data.get("express"),
+            "arrival_message": request.data.get("arrival_message"),
+            "cur_station": request.data.get("cur_station"),
+            "endstation": request.data.get("endstation"),
+            "msg_time": request.data.get("msg_time"),
+            "train_num": request.data.get("train_num"),
         }
+
         if subway_data["line_num"]=="신분당선":
             subway_data["line_num"] = "0호선"
 
@@ -179,6 +282,9 @@ class DirectionsAPIView(APIView):
             second = datetime_obj.second
             time_list = [hour, minute, second]  # 시간, 분, 초를 리스트로 저장
 
+            # return Response(subwithtime)
+            
+
             # line_number_digits = re.findall(r'\d+', subway_data["line_num"])
             if line_number_digits: # 호선이 숫자라면
                 # ln = int(line_number_digits[0]) # 호선 추출
@@ -217,7 +323,7 @@ class DirectionsAPIView(APIView):
                             for i in range(2, len(subwithtime)): # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
                                 term_time = get_operation_time_by_station_and_line(base_sub_list[i], ln)
                                 if term_time is not None: #역간시간정보 있으면
-                                    mins,secs = map(int, term_time.split(":"))
+                                    mins,secs,trash = map(int, term_time.split(":"))
                                     time_list[1] += mins
                                     time_list[2] += secs
                                     time_list[2] += 30 #정차시간
@@ -244,7 +350,7 @@ class DirectionsAPIView(APIView):
                             for i in range(1, len(subwithtime)):   # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
                                 term_time = get_operation_time_by_station_and_line(base_sub_list[i-1], ln)
                                 if term_time is not None: #역간시간정보 있으면
-                                    mins,secs = map(int, term_time.split(":"))
+                                    mins,secs,trash = map(int, term_time.split(":"))
                                     time_list[1] += mins
                                     time_list[2] += secs
                                     time_list[2] += 30 #정차시간
@@ -273,7 +379,7 @@ class DirectionsAPIView(APIView):
                             for i in range(2, len(subwithtime)): # 근래의 4개의 역중에서 db 존재하는 놈들만 시간더해줘서 시간 입력
                                 term_time = get_operation_time_by_station_and_line(base_sub_list[i-1], ln)
                                 if term_time is not None: #역간시간정보 있으면
-                                    mins,secs = map(int, term_time.split(":"))
+                                    mins,secs,trash = map(int, term_time.split(":"))
                                     time_list[1] += mins
                                     time_list[2] += secs
                                     time_list[2] += 30 #정차시간
@@ -305,7 +411,7 @@ class DirectionsAPIView(APIView):
                                 for j in range(1, len(term_stations)):
                                     term_time = get_operation_time_by_station_and_line(term_stations[j], ln)
                                     if term_time is not None: #역간시간정보 있으면
-                                        mins,secs = map(int, term_time.split(":"))
+                                        mins,secs,trash = map(int, term_time.split(":"))
                                         term_min += mins
                                         term_sec += secs
                                     else: #역간시간정보 없으면
@@ -338,7 +444,7 @@ class DirectionsAPIView(APIView):
                                 for j in range(1, len(term_stations)):
                                     term_time = get_operation_time_by_station_and_line(term_stations[j], ln)
                                     if term_time is not None: #역간시간정보 있으면
-                                        mins,secs = map(int, term_time.split(":"))
+                                        mins,secs,trash = map(int, term_time.split(":"))
                                         term_min += mins
                                         term_sec += secs
                                     else: #역간시간정보 없으면
@@ -369,7 +475,7 @@ class DirectionsAPIView(APIView):
                                 for j in range(len(term_stations)-1):
                                     term_time = get_operation_time_by_station_and_line(term_stations[j], ln)
                                     if term_time is not None: #역간시간정보 있으면
-                                        mins,secs = map(int, term_time.split(":"))
+                                        mins,secs,trash = map(int, term_time.split(":"))
                                         term_min += mins
                                         term_sec += secs
                                     else: #역간시간정보 없으면
@@ -402,7 +508,7 @@ class DirectionsAPIView(APIView):
                                 for j in range(len(term_stations)-1):
                                     term_time = get_operation_time_by_station_and_line(term_stations[j], ln)
                                     if term_time is not None: #역간시간정보 있으면
-                                        mins,secs = map(int, term_time.split(":"))
+                                        mins,secs,trash = map(int, term_time.split(":"))
                                         term_min += mins
                                         term_sec += secs
                                     else: #역간시간정보 없으면
