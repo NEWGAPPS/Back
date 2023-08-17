@@ -30,8 +30,7 @@ REALTIME_API_KEY = os.environ['REALTIME_API_KEY']
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'port-0-back-eu1k2llldu9vju.sel3.cloudtype.app',
+    '*'
 ]
 
 
