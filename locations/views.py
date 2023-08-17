@@ -104,27 +104,33 @@ class LocationListView(APIView):
 
                     ## 3호선
                     if curSubwayNum == '1003':
-                        result_data['3호선'].append(statnId)
+                        ##result_data['3호선'].append(statnId)
+                        result_data['3호선'].append(stationName)
                     
                     ## 4호선
                     elif curSubwayNum == '1004':
-                        result_data['4호선'].append(statnId)
+                        ##result_data['4호선'].append(statnId)
+                        result_data['4호선'].append(stationName)
                     
                     ## 7호선
                     elif curSubwayNum == '1007':
-                        result_data['7호선'].append(statnId)
+                        ##result_data['7호선'].append(statnId)
+                        result_data['7호선'].append(stationName)
                     
                     ## 8호선
                     elif curSubwayNum == '1008':
-                        result_data['8호선'].append(statnId)
+                        ##result_data['8호선'].append(statnId)
+                        result_data['8호선'].append(stationName)
                     
                     ## 9호선
                     elif curSubwayNum == '1009':
-                        result_data['9호선'].append(statnId)
+                        ##result_data['9호선'].append(statnId)
+                        result_data['9호선'].append(stationName)
 
                     ##신분당선
                     elif curSubwayNum == '1077':
-                        result_data['신분당선'].append(statnId)
+                        ##result_data['신분당선'].append(statnId)
+                        result_data['신분당선'].append(stationName)
 
             except:
                 error_data.append(entry['name'])
