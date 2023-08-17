@@ -27,7 +27,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 REALTIME_API_KEY = os.environ['REALTIME_API_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '*'
@@ -133,5 +133,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOWED_ORIGINS = [
+    "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app",
+    # 다른 신뢰할 수 있는 출처도 추가할 수 있습니다.
+]
 
 CORS_ALLOW_ALL_ORIGINS = True
