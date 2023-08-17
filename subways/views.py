@@ -20,7 +20,7 @@ class SubwayListView(APIView):
         Curlat = float(kwargs["Curlat"])
         Curlng = float(kwargs["Curlng"])
 
-        locations_url = "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app/api/locations?lat={}&lng={}".format(Curlat, Curlng)"
+        locations_url = "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app/api/locations?lat={}&lng={}".format(Curlat, Curlng)
         
         print(Curlat, Curlng)
         try:
