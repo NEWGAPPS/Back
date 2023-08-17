@@ -21,19 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:8000",
-    "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app",
-    # 다른 신뢰할 수 있는 출처들을 여기에 추가
-]
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:8000",
-    "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app",
-]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv()
@@ -46,6 +34,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '*'
+]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app",
+    # 다른 신뢰할 수 있는 출처들을 여기에 추가
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app",
 ]
 
 
