@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SubwayStationtime
+from .models import SubwayStation
 # Register your models here.
 
-admin.site.register(SubwayStationtime)
+admin.site.register(SubwayStation)
