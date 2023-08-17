@@ -271,7 +271,7 @@ class DirectionsAPIView(APIView):
             subwithtime = [[-1, x, "o", -1, -1, -1, -1, -1] for x in base_sub_list] #[0]은 호선, [1]은 역이름, [2]는 영어이름, [3]은 도착시 [4]는 도착분 [5]은 도착초, [6]은 출구, [7]은 환승노선
             for i in subwithtime:
                 i[7] = sorted(name2Id[i[1]])
-                i[0] = ln
+                i[0] = subway_data["line_num"]
                 i[2] = get_eng_by_station_and_line(i[1],ln)
                 i[6] = get_exit_by_station_and_line(i[1],ln)
         
