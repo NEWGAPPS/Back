@@ -11,7 +11,7 @@ from collections import OrderedDict
 REALTIME_API_KEY = settings.REALTIME_API_KEY
 
 start_index = 0
-end_index = 10
+end_index = 50
 
 class SubwayListView(APIView):
     def get(self, request, *args, **kwargs):
@@ -20,8 +20,7 @@ class SubwayListView(APIView):
         Curlat = float(kwargs["Curlat"])
         Curlng = float(kwargs["Curlng"])
 
-        locations_url = "http://127.0.0.1:8000/api/locations?lat={}&lng={}".format(Curlat, Curlng)
-
+        locations_url = "https://port-0-back-eu1k2llldu9vju.sel3.cloudtype.app/api/locations?lat={}&lng={}".format(Curlat, Curlng)"
         
         print(Curlat, Curlng)
         try:
