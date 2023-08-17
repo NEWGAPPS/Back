@@ -11,7 +11,7 @@ from collections import OrderedDict
 REALTIME_API_KEY = settings.REALTIME_API_KEY
 
 start_index = 0
-end_index = 50
+end_index = 20
 
 class SubwayListView(APIView):
     def get(self, request, *args, **kwargs):
