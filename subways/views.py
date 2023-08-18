@@ -11,7 +11,7 @@ from collections import OrderedDict
 REALTIME_API_KEY = settings.REALTIME_API_KEY
 
 start_index = 0
-end_index = 20
+end_index = 50
 
 class SubwayListView(APIView):
     def get(self, request, *args, **kwargs):
@@ -50,7 +50,7 @@ class SubwayListView(APIView):
 
                 print(adjacent_stations)
 
-                url = f"http://swopenAPI.seoul.go.kr/api/subway/{REALTIME_API_KEY}/json/realtimePosition/0/10/{subway_nm}"
+                url = f"http://swopenAPI.seoul.go.kr/api/subway/{REALTIME_API_KEY}/json/realtimePosition/0/50/{subway_nm}"
                 response = requests.get(url)
                 data = response.json()
                 if 'realtimePositionList' in data:
