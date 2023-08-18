@@ -13,7 +13,7 @@ import os
 import json
 import pandas as pd
 
-# REALTIME_API_KEY = settings.REALTIME_API_KEY
+REALTIME_API_KEY = settings.REALTIME_API_KEY
 # SUBWAYS_API_URL = "http://127.0.0.1:8000/api/subways"
 
 def import_subway_data(request):
@@ -218,16 +218,56 @@ class DirectionsAPIView(APIView):
         #     "endstation": "정발산", #(statnTnm)
         #     "msg_time": "2023-08-11 10:51:42" #(recptnDt),
         # }
-        subway_data = {
-            "line_num": request.data.get("line_num"),
-            "direction": request.data.get("direction"),
-            "express": request.data.get("express"),
-            "arrival_message": request.data.get("arrival_message"),
-            "cur_station": request.data.get("cur_station"),
-            "endstation": request.data.get("endstation"),
-            "msg_time": request.data.get("msg_time"),
-            "train_num": request.data.get("train_num"),
-        }
+
+        # 프로토타입
+        # subway_data = {
+        #     "line_num": request.data.get("line_num"),
+        #     "direction": request.data.get("direction"),
+        #     "express": request.data.get("express"),
+        #     "arrival_message": request.data.get("arrival_message"),
+        #     "cur_station": request.data.get("cur_station"),
+        #     "endstation": request.data.get("endstation"),
+        #     "msg_time": request.data.get("msg_time"),
+        #     "train_num": request.data.get("train_num"),
+        # }
+
+        subway_nm = request.data.get("subway_nm")
+        trainNo = request.data.get("trainNo")
+        # subway_nm = "신분당선"
+        # trainNo = "23"
+        # {
+        #     "arrival_message": "0",
+        #     "cur_station": "양재시민의숲",
+        #     "direction": "1",
+        #     "endstation": "광교",
+        #     "express": "0",
+        #     "line_num": "신분당선",
+        #     "msg_time": "2023-08-17 23:28:27",
+        #     "train_num":"23"
+        # }
+
+        url = f"http://swopenAPI.seoul.go.kr/api/subway/{REALTIME_API_KEY}/json/realtimePosition/0/50/{subway_nm}"
+        response = requests.get(url)
+        data = response.json()
+        
+        if 'realtimePositionList' in data:
+            realtime_position_list = data['realtimePositionList']
+
+            for entry in realtime_position_list: # 호선 받은 실시간 지하철 위치정보중에 지하철 하나가 entry
+                if trainNo==entry["trainNo"]: # 그 지하철의 ID가 내가 찾고 있는 ID 라면 (프론트에서 지정해준)
+                    subway_data = {
+                        "line_num": entry["subwayNm"],
+                        "direction": entry["updnLine"],
+                        "express": entry["directAt"],
+                        "arrival_message": entry["trainSttus"],
+                        "cur_station": entry["statnNm"],
+                        "endstation": entry["statnTnm"],
+                        "msg_time": entry["recptnDt"],
+                        "train_num": entry["trainNo"]
+                    }
+        # 에상되는 문제점: subways의 views에서는 인접 4개의 역을 뒤져서 발견한 결관데 나는 그 지하철을 호선 전체에서 뒤져야되는데 10개만 뒤져서 확률상 발견될 수 있을까
+        # 해결책: api 호출을 그 결과게시판인지 뭔지에 올려서 api 무한대로 만들고 0/100/ 그냥 찍어버린다
+
         # subway_data = {
         #     "arrival_message": "0",
         #     "cur_station": "양재시민의숲",
